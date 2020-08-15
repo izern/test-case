@@ -2,8 +2,9 @@ package cn.izern.test.case3;
 
 import cn.izern.test.case3.loader.CustomClassLoader;
 import cn.izern.test.case3.loader.EmptyClassLoader;
-import cn.izern.test.case3.spi.service.HelloService;
 import java.io.File;
+import cn.izern.test.case3.spi.service.HelloService;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -21,7 +22,6 @@ public class DemoClass {
     printClassLoaderInfo();
     loadClassWithDiffClassLoader();
     serviceLoader();
-//    这里报错，原因待查
     Thread.currentThread().setContextClassLoader(new CustomClassLoader());
     serviceLoader();
   }
@@ -71,16 +71,20 @@ public class DemoClass {
 
   public static void serviceLoader() throws ClassNotFoundException {
     System.out.println("加载HelloService实现类，并执行");
-    //
     Class<HelloService> clazz = (Class<HelloService>) Thread.currentThread().getContextClassLoader()
         .loadClass(HelloService.class.getName());
-
     Iterator<HelloService> iterator = ServiceLoader.load(clazz).iterator();
     while (iterator.hasNext()) {
-      Object helloService = iterator.next();
-      clazz.cast(helloService).sayHello();
-      System.out.println(String.format("当前实现类为%s,加载器为:%S", helloService.toString(),
-          helloService.getClass().getClassLoader()));
+
+      Object obj = iterator.next();
+      try {
+        Method sayHello = clazz.getMethod("sayHello");
+        sayHello.invoke(obj);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      System.out.println(String.format("当前实现类为%s,加载器为:%S", obj.toString(),
+          obj.getClass().getClassLoader()));
     }
   }
 
