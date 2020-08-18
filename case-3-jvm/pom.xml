@@ -13,4 +13,16 @@
 
   <description>jvm相关知识点</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openjdk.jol</groupId>
+      <artifactId>jol-core</artifactId>
+      <version>0.12</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+</dependencies>
+
 </project>

@@ -1,13 +1,18 @@
 package cn.izern.test.case3;
 
+import cn.izern.test.case3.layout.Empty;
+import cn.izern.test.case3.layout.RefField;
 import cn.izern.test.case3.loader.CustomClassLoader;
 import cn.izern.test.case3.loader.EmptyClassLoader;
 import java.io.File;
 import cn.izern.test.case3.spi.service.HelloService;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+import org.junit.Test;
+import org.openjdk.jol.info.ClassLayout;
 import sun.misc.Launcher;
 
 /**
@@ -19,14 +24,20 @@ public class DemoClass {
   private static String className = "cn.izern.test.case3.DemoClass";
 
   public static void main(String[] args) throws ClassNotFoundException {
-    printClassLoaderInfo();
-    loadClassWithDiffClassLoader();
-    serviceLoader();
-    Thread.currentThread().setContextClassLoader(new CustomClassLoader());
-    serviceLoader();
+//    DemoClass demoClass = new DemoClass();
+//    demoClass.printClassLoaderInfo();
+//    demoClass.loadClassWithDiffClassLoader();
+//    demoClass.serviceLoader();
+//    Thread.currentThread().setContextClassLoader(new CustomClassLoader());
+//    demoClass.serviceLoader();
+    Empty empty = new Empty();
+    while (true) {
+
+    }
   }
 
-  public static void printClassLoaderInfo() {
+  @Test
+  public void printClassLoaderInfo() {
     EmptyClassLoader echoClassLoader = new EmptyClassLoader();
     System.out.println(String.format("echoClassLoader父 类加载器:%s", echoClassLoader.getParent()));
 
@@ -53,7 +64,8 @@ public class DemoClass {
 
   }
 
-  public static void loadClassWithDiffClassLoader() throws ClassNotFoundException {
+  @Test
+  public void loadClassWithDiffClassLoader() throws ClassNotFoundException {
 
     Class<?> class1 = new EmptyClassLoader().loadClass(className);
     Class<?> class2 = new EmptyClassLoader().loadClass(className);
@@ -69,7 +81,8 @@ public class DemoClass {
 
   }
 
-  public static void serviceLoader() throws ClassNotFoundException {
+  @Test
+  public void serviceLoader() throws ClassNotFoundException {
     System.out.println("加载HelloService实现类，并执行");
     Class<HelloService> clazz = (Class<HelloService>) Thread.currentThread().getContextClassLoader()
         .loadClass(HelloService.class.getName());
@@ -88,4 +101,26 @@ public class DemoClass {
     }
   }
 
+  @Test
+  public void emptyClassLayout() {
+    System.out.println(ClassLayout.parseInstance(new Empty()).toPrintable());
+  }
+
+  @Test
+  public void arrayClassLayout() {
+    System.out.println(ClassLayout.parseInstance(1).toPrintable());
+    System.out.println(ClassLayout.parseInstance(1L).toPrintable());
+    System.out.println(ClassLayout.parseInstance(new int[]{1, 2, 3}).toPrintable());
+    System.out.println(ClassLayout.parseInstance(new long[]{1L, 2L, 3L}).toPrintable());
+  }
+
+  @Test
+  public void refFieldClassLayout() {
+    System.out.println(ClassLayout.parseInstance(new BigInteger("1")).toPrintable());
+    System.out.println(ClassLayout.parseInstance(1L).toPrintable());
+    System.out.println(ClassLayout.parseInstance(1F).toPrintable());
+    System.out.println(ClassLayout.parseInstance(1D).toPrintable());
+    System.out.println(ClassLayout.parseInstance(new RefField(true, 1L)).toPrintable());
+
+  }
 }
